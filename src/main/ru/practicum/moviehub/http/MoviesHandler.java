@@ -88,7 +88,7 @@ public class MoviesHandler extends BaseHttpHandler {
 
     public void handlePostRequest(HttpExchange ex) throws IOException {
         Movie movie;
-        try (InputStreamReader isr = new InputStreamReader(ex.getRequestBody(), StandardCharsets.UTF_8)){
+        try (InputStreamReader isr = new InputStreamReader(ex.getRequestBody(), StandardCharsets.UTF_8)) {
             movie = gson.fromJson(isr, Movie.class);
         } catch (IOException e) {
             error.addDetails("Что-то пошло не так");
