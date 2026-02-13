@@ -76,14 +76,14 @@ public class MoviesApiTest extends BaseApiTestMethod {
 
         assertEquals(201, response.statusCode(), "Успешное добавление - код должен быть 201");
 
-        String json_invalidYear = "{\"title\": \"" + "Dogs" + "\", \"year\": " + 2036 + "}";
-        HttpRequest request2 = postRequest_movies(json_invalidYear, "application/json");
+        String jsonInvalidYear = "{\"title\": \"" + "Dogs" + "\", \"year\": " + 2036 + "}";
+        HttpRequest request2 = postRequest_movies(jsonInvalidYear, "application/json");
         HttpResponse<String> response2 = client.send(request2, bodyHandler);
         assertEquals(422, response2.statusCode(), "Ошибка валидации - код должен быть 422!");
 
         //Запрос с некорректным типом
-        HttpRequest request_invalid_CT = postRequest_movies(jsonString, "text");
-        HttpResponse<String> response3 = client.send(request_invalid_CT, bodyHandler);
+        HttpRequest requestInvalidCt = postRequest_movies(jsonString, "text");
+        HttpResponse<String> response3 = client.send(requestInvalidCt, bodyHandler);
         assertEquals(415, response3.statusCode(), "Неправильное значение заголовка - код должен быть 415!");
     }
 
