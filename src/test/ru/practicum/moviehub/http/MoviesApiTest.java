@@ -95,13 +95,13 @@ public class MoviesApiTest extends BaseApiTestMethod {
         assertEquals(200, response.statusCode(), "Фильм найден - код должен быть 200");
         assertEquals(CT_JSON, response.headers().firstValue("Content-type").get());
 
-        HttpRequest request_NotFound = getRequest("/movies/14");
-        HttpResponse<String> response_NotFound = client.send(request_NotFound, bodyHandler);
-        assertEquals(404, response_NotFound.statusCode(), "Фильм не найдет - код должен быть 404");
+        HttpRequest requestNotFound = getRequest("/movies/14");
+        HttpResponse<String> responseNotFound = client.send(requestNotFound, bodyHandler);
+        assertEquals(404, responseNotFound.statusCode(), "Фильм не найдет - код должен быть 404");
 
-        HttpRequest request_BadRequest = getRequest("/movies/qwerty");
-        HttpResponse<String> response_BadRequest = client.send(request_BadRequest, bodyHandler);
-        assertEquals(400, response_BadRequest.statusCode(), "Некорректный id - код должен быть 400");
+        HttpRequest requestBadRequest = getRequest("/movies/qwerty");
+        HttpResponse<String> responseBadRequest = client.send(requestBadRequest, bodyHandler);
+        assertEquals(400, responseBadRequest.statusCode(), "Некорректный id - код должен быть 400");
     }
 
     @Test
@@ -113,13 +113,13 @@ public class MoviesApiTest extends BaseApiTestMethod {
         assertEquals(204, response.statusCode(), "Фильм удален - код должен быть 204");
         assertEquals(CT_JSON, response.headers().firstValue("Content-type").get());
 
-        HttpRequest request_NotFound = deleteRequest("/movies/14");
-        HttpResponse<String> response_NotFound = client.send(request_NotFound, bodyHandler);
-        assertEquals(404, response_NotFound.statusCode(), "Фильм не найден - код должен быть 404");
+        HttpRequest requestNotFound = deleteRequest("/movies/14");
+        HttpResponse<String> responseNotFound = client.send(requestNotFound, bodyHandler);
+        assertEquals(404, responseNotFound.statusCode(), "Фильм не найден - код должен быть 404");
 
-        HttpRequest request_BadRequest = deleteRequest("/movies/qwerty");
-        HttpResponse<String> response_BadRequest = client.send(request_BadRequest, bodyHandler);
-        assertEquals(400, response_BadRequest.statusCode(), "Неверный id - код должен быть 400");
+        HttpRequest requestBadRequest = deleteRequest("/movies/qwerty");
+        HttpResponse<String> responseBadRequest = client.send(requestBadRequest, bodyHandler);
+        assertEquals(400, responseBadRequest.statusCode(), "Неверный id - код должен быть 400");
     }
 
     @Test
@@ -131,12 +131,12 @@ public class MoviesApiTest extends BaseApiTestMethod {
         assertEquals(200, response.statusCode(), "Успешный фильтр - код должен быть 200");
         assertEquals(CT_JSON, response.headers().firstValue("Content-type").get());
 
-        HttpRequest request_emptyBody = getRequest("/movies?year=2021");
-        HttpResponse<String> response_emptyBody = client.send(request_emptyBody, bodyHandler);
-        assertTrue(response_emptyBody.body().equalsIgnoreCase("[]"), "В теле должен быть пустой массив");
+        HttpRequest requestEmptyBody = getRequest("/movies?year=2021");
+        HttpResponse<String> responseEmptyBody = client.send(requestEmptyBody, bodyHandler);
+        assertTrue(responseEmptyBody.body().equalsIgnoreCase("[]"), "В теле должен быть пустой массив");
 
-        HttpRequest request_BadRequest = getRequest("/movies?year=QWERTY");
-        HttpResponse<String> response_BadRequest = client.send(request_BadRequest, bodyHandler);
-        assertEquals(400, response_BadRequest.statusCode(), "Некорректный запрос - код должен быть 400");
+        HttpRequest requestBadRequest = getRequest("/movies?year=QWERTY");
+        HttpResponse<String> responseBadRequest = client.send(requestBadRequest, bodyHandler);
+        assertEquals(400, responseBadRequest.statusCode(), "Некорректный запрос - код должен быть 400");
     }
 }
