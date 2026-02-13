@@ -1,17 +1,15 @@
 package ru.practicum.moviehub.http;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import java.net.URI;
 import java.net.http.HttpRequest;
 
 public abstract class BaseApiTestMethod {
     private static final String BASE = "http://localhost:8080";
 
-    public HttpRequest postRequest_movies(String json, String content_type) {
+    public HttpRequest postRequest_movies(String json, String contentType) {
         return HttpRequest.newBuilder()
                 .uri(URI.create(BASE + "/movies"))
-                .header("Content-Type", content_type)
+                .header("Content-Type", contentType)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
     }
