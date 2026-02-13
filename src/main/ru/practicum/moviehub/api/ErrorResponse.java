@@ -1,5 +1,38 @@
 package ru.practicum.moviehub.api;
 
-public class ErrorResponse {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+public class ErrorResponse {
+    String error;
+    List<String> details = new ArrayList<>();
+    Map<String, List<String>> errorMap = new HashMap<>();
+
+    public void clearMap() {
+        errorMap.clear();
+        details.clear();
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public void addDetails(String str) {
+        details.add(str);
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public List<String> getDetails() {
+        return details;
+    }
+
+    public Map<String, List<String>> getErrorMap() {
+        errorMap.put(error, details);
+        return errorMap;
+    }
 }
