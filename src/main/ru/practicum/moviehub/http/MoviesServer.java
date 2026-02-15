@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class MoviesServer {
-    protected final static String MOVIES = "/movies";
+    protected static final String MOVIES = "/movies";
     HttpServer server;
     MoviesStore store;
 

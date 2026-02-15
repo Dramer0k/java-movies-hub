@@ -17,9 +17,9 @@ import java.util.List;
 
 public class MoviesHandler extends BaseHttpHandler {
 
-    private final static int MIN_YEAR = 1888;
-    private final static int MAX_YEAR = LocalDate.now().getYear() + 1;
-    private final static int MAX_MOVIE_TITLE_LENGTH = 100;
+    private static final int MIN_YEAR = 1888;
+    private static final int MAX_YEAR = LocalDate.now().getYear() + 1;
+    private static final int MAX_MOVIE_TITLE_LENGTH = 100;
     private final MoviesStore moviesStore;
     private List<Movie> movieList;
     private final ErrorResponse error = new ErrorResponse();
