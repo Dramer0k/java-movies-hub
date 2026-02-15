@@ -17,10 +17,13 @@ import java.util.List;
 
 public class MoviesHandler extends BaseHttpHandler {
 
+    private final static int MIN_YEAR = 1888;
+    private final static int MAX_YEAR = LocalDate.now().getYear() + 1;
+    private final static int MAX_MOVIE_TITLE_LENGTH = 100;
     private final MoviesStore moviesStore;
     private List<Movie> movieList;
     private final ErrorResponse error = new ErrorResponse();
-    Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     public MoviesHandler(MoviesStore moviesStore) {
         this.moviesStore = moviesStore;
@@ -28,7 +31,7 @@ public class MoviesHandler extends BaseHttpHandler {
 
     @Override
     public void handle(HttpExchange ex) throws IOException {
-        movieList = new ArrayList<>(moviesStore.getAllMovie().values());
+        movieList = new ArrayList<>(moviesStore.getMoviesMap().values());
         String body = gson.toJson(movieList);
         String method = ex.getRequestMethod();
 
@@ -45,30 +48,23 @@ public class MoviesHandler extends BaseHttpHandler {
         String query = ex.getRequestURI().getQuery();
         String[] array = path.split("/");
 
-        if (array.length == 2) {
-            if (query != null && query.contains("year=")) {
-                String yearStr = query.split("=")[1];
-                try {
+        try {
+            if (array.length == 2) {
+                if (query != null && query.contains("year=")) {
+                    String yearStr = query.split("=")[1];
+
                     int year = Integer.parseInt(yearStr);
                     List<Movie> filteredMovies = movieList.stream()
-                            .filter(movie -> movie.getYear() == year)
-                            .toList();
+                        .filter(movie -> movie.getYear() == year)
+                        .toList();
                     String json = gson.toJson(filteredMovies);
                     sendJson(ex, 200, json);
                     return;
-                } catch (NumberFormatException e) {
-                    error.addDetails("Некорректный параметр запроса — 'year'");
-                    String json = gson.toJson(error.getDetails());
-                    error.clearMap();
-                    sendJson(ex, 400, json);
-                    return;
                 }
-            }
-            sendJson(ex, 200, body);
-        } else if (array.length == 3) {
-            try {
+                sendJson(ex, 200, body);
+            } else if (array.length == 3) {
                 int id = Integer.parseInt(array[2]);
-                if (moviesStore.getAllMovie().size() > id) {
+                if (moviesStore.getMoviesMap().size() > id) {
                     String json = gson.toJson(moviesStore.getMovie(id));
                     sendJson(ex, 200, json);
                 } else {
@@ -77,12 +73,16 @@ public class MoviesHandler extends BaseHttpHandler {
                     error.clearMap();
                     sendJson(ex, 404, json);
                 }
-            } catch (NumberFormatException e) {
-                error.addDetails("Некорректный ID");
-                String json = gson.toJson(error.getDetails());
-                error.clearMap();
-                sendJson(ex, 400, json);
             }
+        } catch (NumberFormatException e) {
+            if (query != null && query.contains("year=")) {
+                error.addDetails("Некорректный параметр запроса — 'year'");
+            } else {
+                error.addDetails("Некорректный ID");
+            }
+            String json = gson.toJson(error.getDetails());
+            error.clearMap();
+            sendJson(ex, 400, json);
         }
     }
 
@@ -114,7 +114,7 @@ public class MoviesHandler extends BaseHttpHandler {
             return;
         }
 
-        int id = moviesStore.getAllMovie().size();
+        int id = moviesStore.getMoviesMap().size();
         if (moviesStore.checkMovie(movie.getTitle())) {
             id = moviesStore.getMovieId(movie.getTitle());
         }
@@ -122,7 +122,7 @@ public class MoviesHandler extends BaseHttpHandler {
         HashMap<Integer, Movie> map = new HashMap<>();
         map.put(id, movie);
 
-        moviesStore.addMovie(movie.getTitle(), movie.getYear());
+        moviesStore.addMovie(movie);
         String jsonMovie = gson.toJson(map);
         sendJson(ex, 201, jsonMovie);
     }
@@ -133,7 +133,7 @@ public class MoviesHandler extends BaseHttpHandler {
 
         try {
             int id = Integer.parseInt(array[2]);
-            if (moviesStore.getAllMovie().size() >= id) {
+            if (moviesStore.getMoviesMap().containsKey(id)) {
                 moviesStore.deleteMovie(id);
                 sendNoContent(ex);
             } else {
@@ -154,23 +154,23 @@ public class MoviesHandler extends BaseHttpHandler {
         error.addDetails("Принимаю только Get и POST запросы!");
         String json = gson.toJson(error.getDetails());
         error.clearMap();
-        sendJson(ex, 200, json);
+        sendJson(ex, 405, json);
     }
 
     public boolean validateMovie(Movie movie) {
-        if (movie.getTitle().isBlank() || movie.getTitle().length() > 100 ||
-                movie.getYear() <= 1888 || movie.getYear() >= LocalDate.now().getYear() + 1) {
+        if (movie.getTitle().isBlank() || movie.getTitle().length() > MAX_MOVIE_TITLE_LENGTH ||
+                movie.getYear() <= MIN_YEAR || movie.getYear() >= MAX_YEAR) {
             error.setError("Ошибка валидации!");
 
             if (movie.getTitle().isBlank()) {
                 error.addDetails("Название не должно быть пустым!");
             }
 
-            if (movie.getTitle().length() > 100) {
+            if (movie.getTitle().length() > MAX_MOVIE_TITLE_LENGTH) {
                 error.addDetails("Длина тела должна быть <= 100");
             }
 
-            if (movie.getYear() <= 1888 || movie.getYear() > LocalDate.now().getYear() + 1) {
+            if (movie.getYear() <= MIN_YEAR || movie.getYear() >= MAX_YEAR) {
                 error.addDetails("Год должен быть между 1888 и 2026!");
             }
             return false;

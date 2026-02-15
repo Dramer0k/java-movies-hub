@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ErrorResponse {
-    String error;
-    List<String> details = new ArrayList<>();
-    Map<String, List<String>> errorMap = new HashMap<>();
+    private String error;
+    private List<String> details = new ArrayList<>();
+    private Map<String, List<String>> errorMap = new HashMap<>();
 
     public void clearMap() {
         errorMap.clear();
@@ -21,10 +21,6 @@ public class ErrorResponse {
 
     public void addDetails(String str) {
         details.add(str);
-    }
-
-    public String getError() {
-        return error;
     }
 
     public List<String> getDetails() {

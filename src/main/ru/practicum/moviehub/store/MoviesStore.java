@@ -4,17 +4,18 @@ import ru.practicum.moviehub.model.Movie;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MoviesStore {
     Map<Integer, Movie> movieMap = new HashMap<>();
 
-    public void addMovie(String title, int year) {
-        for (Movie movie : movieMap.values()) {
-            if (movie.getTitle().equalsIgnoreCase(title)) {
+    public void addMovie(Movie movie) {
+        for (Movie mov : movieMap.values()) {
+            if (Objects.equals(mov.getTitle(), movie.getTitle())) {
                 return;
             }
         }
-        movieMap.put(movieMap.size(), new Movie(title, year));
+        movieMap.put(movieMap.size(), movie);
     }
 
     public Movie getMovie(int id) {
@@ -23,15 +24,15 @@ public class MoviesStore {
 
     public int getMovieId(String movie) {
         int movieId = 0;
-        for (int id : movieMap.keySet()) {
-            if (movieMap.get(id).getTitle().equalsIgnoreCase(movie)) {
+        for (int id : movieMap.keySet()) { //на выходе нужно получить id, если буду бегать по value я его не получу
+            if (Objects.equals(movieMap.get(id).getTitle(), movie)) {
                 movieId = id;
             }
         }
         return movieId;
     }
 
-    public Map<Integer, Movie> getAllMovie() {
+    public Map<Integer, Movie> getMoviesMap() {
         return movieMap;
     }
 
@@ -39,9 +40,9 @@ public class MoviesStore {
         movieMap.remove(id);
     }
 
-    public boolean checkMovie(String string) {
+    public boolean checkMovie(String title) {
         for (Movie movie : movieMap.values()) {
-            if (movie.getTitle().equalsIgnoreCase(string)) {
+            if (Objects.equals(movie.getTitle(), title)) {
                 return true;
             }
         }
